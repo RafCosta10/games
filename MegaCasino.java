@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MegaCasino {
@@ -132,6 +133,10 @@ public class MegaCasino {
 			"| o   o |",
 			"+-------+"
 		}
+	};
+
+	static final String [][] CARD_ART = new String[][] {
+		
 	};
 
 	public static void sleepMs(int ms) {
@@ -539,6 +544,200 @@ public class MegaCasino {
 		return  money;
 	}
 
+	public static int gameBlackjack(String name, int money) {
+		int bet;
+		int[] card_vals = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10};
+
+		ArrayList<Integer> player_cards = new ArrayList<Integer>();
+		ArrayList<Integer> dealer_cards = new ArrayList<Integer>();
+
+		int player_point = 0;
+		int dealer_point = 0;
+
+		String rules = getYesNo();
+		
+		if (rules.equals("y")) {
+			System.out.println("");
+		}
+
+		bet = getBet(money);
+
+		if (bet == 0) {
+			return money;
+		}
+
+		// ace = 1 going up till king = 13
+		int first_dealer_card = (int) (Math.random() * 13 + 1);
+		dealer_cards.add(first_dealer_card);
+
+		int player_card = (int) (Math.random() * 13 + 1);
+		player_cards.add(player_card);
+
+		System.out.print("Press [Enter] to draw a card");
+		s.nextLine();
+
+		if (player_card == 1) {
+			System.out.print("Your card is an Ace. Do you want it to be worth 1 or 11?: ");
+			String num = s.nextLine();
+			if (num.equals("1")) {
+				player_point += 1;
+			} else{
+				player_point += 11;
+			}
+
+			System.out.printf("Your current total is %d.%n", player_point);
+		} else{
+			player_point += card_vals[player_card];
+			System.out.printf("Your current total is %d.%n", player_point);
+		}
+
+		System.out.println("Your starting card is: ");
+		// print card face for specific card
+		System.out.print("");
+
+		System.out.println("The dealer will now draw a first card...");
+		// maybe have delay here, have the card face down
+		System.out.print("");
+
+		// ----------------------------------------------------------
+
+		// ace = 1 going up till king = 13
+		int dealer_card = (int) (Math.random() * 13 + 1);
+		dealer_cards.add(dealer_card);
+		dealer_point += card_vals[dealer_card];
+
+		player_card = (int) (Math.random() * 13 + 1);
+		player_cards.add(player_card);
+
+		if (player_card == 1) {
+			System.out.print("Your card is an Ace. Do you want it to be worth 1 or 11?: ");
+			String num = s.nextLine();
+			if (num.equals("1")) {
+				player_point += 1;
+			} else{
+				player_point += 11;
+			}
+
+			System.out.printf("Your current total is %d.%n", player_point);
+		} else{
+			player_point += card_vals[player_card];
+			System.out.printf("Your current total is %d.%n", player_point);
+		}
+
+		System.out.print("Press [Enter] to draw a card");
+		s.nextLine();
+
+		System.out.println("Your card is: ");
+		// print card face for specific card
+		System.out.print("\n");
+
+		System.out.println("The dealer will now draw a card...");
+		// maybe have delay here, print actual card
+		System.out.print("");
+
+		while (true) { 
+			System.out.print("Do you want to draw another card? (y/n): ");
+			String choice = s.nextLine();
+
+			if (choice.equals("n")) {
+				break;
+			}
+
+			System.out.print("Want to double down? (y/n): ");
+			choice = s.nextLine();
+
+			if (choice.equals("y")) {
+				if (money > (2*bet)) {
+					bet *= 2;
+				} else {
+					System.out.println("You don't have the funds to double down!\n");
+				}
+			}
+
+			player_card = (int) (Math.random() * 13 + 1);
+			player_cards.add(player_card);
+			player_point += card_vals[player_card];
+
+			System.out.print("Press [Enter] to draw a card");
+			s.nextLine();
+
+			System.out.printf("Your total is %d.%n", player_point);
+			// print card face for specific card
+			System.out.print("");
+
+			if (player_point == 21) {
+				break;
+			} else if (player_point > 21) {
+				System.out.println("Sorry, you lost.");
+				money -= bet;
+				break;
+			}
+		}
+
+		System.out.print("The dealer's first card was...");
+		// reveal dealer's first card
+		s.nextLine();
+
+		dealer_point += card_vals[first_dealer_card];
+		System.out.printf("The dealer's total is %d.%n", dealer_point);
+
+		if (dealer_point <= 16) {
+			System.out.print("The dealer will now draw another card...");
+			// reveal dealer's card
+			System.out.print("");
+
+			dealer_card = (int) (Math.random() * 13 + 1);
+			dealer_cards.add(dealer_card);
+			dealer_point += card_vals[dealer_card];
+
+			System.out.printf("The dealer's total is %d.%n", dealer_point);
+		}
+
+		if (dealer_point == 21) {
+			if (player_point == 21) {
+				System.out.println("You and the dealer got the same total! You get your bet back.");
+				return money;
+			} else {
+				System.out.println("Sorry, you lost.");
+				money -= bet;
+				return money;
+			}
+		} else if (dealer_point > 21) {
+			if (player_point <= 21) {
+				if (player_point == 21) {
+					money += 1.5*bet;
+					return money;
+				} else {
+					money += bet;
+					return money;
+				}
+
+			}
+
+		} else if (player_point > 21) {
+			System.out.println("Sorry, you lost.");
+			money -= bet;
+			return money;
+		} else if (player_point == dealer_point) {
+				System.out.println("You and the dealer got the same total! You get your bet back.");
+				return money;
+		}  else if (player_point == 21) {
+			System.out.println("Congratulations, you won!");
+			money += 1.5*bet;
+			return money;
+		}
+
+		if (player_point > dealer_point) {
+			System.out.println("Congratulations, you won!");
+			money += bet;
+			return money;
+		} else {
+			System.out.println("Sorry, you lost.");
+			money -= bet;
+			return money;
+		}
+	}
+
 	public static void printTitle() {
 		printArt(CASINO_TITLE);
 	}
@@ -565,13 +764,14 @@ public class MegaCasino {
 			System.out.println("2. Heads or Tails");
 			System.out.println("3. Higher or Lower");
 			System.out.println("4. Over, Under, Even");
-			System.out.println("5. Exit\n");
+			System.out.println("5. Blackjack (work in progress)");
+			System.out.println("6. Exit\n");
 
 			while (true) {
 				System.out.print("What game do you want to play?: ");
 				choice = s.nextLine();
 
-				if (choice.equals("1") || choice.equals("2") || choice.equals("3") || choice.equals("4") || choice.equals("5")) {
+				if (choice.equals("1") || choice.equals("2") || choice.equals("3") || choice.equals("4") || choice.equals("5") || choice.equals("6")) {
 					break;
 				} else {
 					System.out.println("Invalid response!");
@@ -586,6 +786,8 @@ public class MegaCasino {
 				money = gameHighLow(name, money);
 			} else if (choice.equals("4")) {
 				money = gameOverUnderEven(name, money);
+			} else if (choice.equals("5")) {
+				money = gameBlackjack(name, money);
 			} else {
 				break;
 			}
