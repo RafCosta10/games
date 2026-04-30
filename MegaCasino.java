@@ -547,6 +547,7 @@ public class MegaCasino {
 	public static int gameBlackjack(String name, int money) {
 		int bet;
 		int[] card_vals = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10};
+		String[] card_names = {"Ace", "Jack", "Queen", "King"};
 
 		ArrayList<Integer> player_cards = new ArrayList<Integer>();
 		ArrayList<Integer> dealer_cards = new ArrayList<Integer>();
@@ -554,7 +555,8 @@ public class MegaCasino {
 		int player_point = 0;
 		int dealer_point = 0;
 
-		String rules = getYesNo();
+		System.out.print("Do you want to see the rules? (y/n): ");
+		String rules = s.nextLine();
 		
 		if (rules.equals("y")) {
 			System.out.println("");
@@ -573,7 +575,8 @@ public class MegaCasino {
 		int player_card = (int) (Math.random() * 13 + 1);
 		player_cards.add(player_card);
 
-		System.out.print("Press [Enter] to draw a card");
+		s.nextLine();
+		System.out.print("Press [Enter] to draw a card...");
 		s.nextLine();
 
 		if (player_card == 1) {
@@ -587,11 +590,20 @@ public class MegaCasino {
 
 			System.out.printf("Your current total is %d.%n", player_point);
 		} else{
-			player_point += card_vals[player_card];
+			if (player_card == 11) {
+				System.out.println("Your starting card is:" + card_names[1]);
+			} else if (player_card == 12) {
+				System.out.println("Your starting card is:" + card_names[2]);
+			} else if (player_card == 13) {
+				System.out.println("Your starting card is:" + card_names[3]);
+			} else {
+				System.out.printf("Your starting card is: %d%n", player_card);
+			}
+
+			player_point += card_vals[player_card - 1];
 			System.out.printf("Your current total is %d.%n", player_point);
 		}
-
-		System.out.println("Your starting card is: ");
+		
 		// print card face for specific card
 		System.out.print("");
 
@@ -601,10 +613,13 @@ public class MegaCasino {
 
 		// ----------------------------------------------------------
 
+		s.nextLine();
+		System.out.print("Press [Enter] to draw a second card...");
+		s.nextLine();
 		// ace = 1 going up till king = 13
 		int dealer_card = (int) (Math.random() * 13 + 1);
 		dealer_cards.add(dealer_card);
-		dealer_point += card_vals[dealer_card];
+		dealer_point += card_vals[dealer_card - 1];
 
 		player_card = (int) (Math.random() * 13 + 1);
 		player_cards.add(player_card);
@@ -620,20 +635,23 @@ public class MegaCasino {
 
 			System.out.printf("Your current total is %d.%n", player_point);
 		} else{
-			player_point += card_vals[player_card];
+			if (player_card == 11) {
+				System.out.println("Your starting card is:" + card_names[1]);
+			} else if (player_card == 12) {
+				System.out.println("Your starting card is:" + card_names[2]);
+			} else if (player_card == 13) {
+				System.out.println("Your starting card is:" + card_names[3]);
+			} else {
+				System.out.printf("Your starting card is: %d%n", player_card);
+			}
+
+			player_point += card_vals[player_card - 1];
 			System.out.printf("Your current total is %d.%n", player_point);
 		}
 
-		System.out.print("Press [Enter] to draw a card");
-		s.nextLine();
-
-		System.out.println("Your card is: ");
-		// print card face for specific card
-		System.out.print("\n");
-
 		System.out.println("The dealer will now draw a card...");
 		// maybe have delay here, print actual card
-		System.out.print("");
+		System.out.printf("The dealer's current total is: %d.%n", dealer_point);
 
 		while (true) { 
 			System.out.print("Do you want to draw another card? (y/n): ");
@@ -656,41 +674,62 @@ public class MegaCasino {
 
 			player_card = (int) (Math.random() * 13 + 1);
 			player_cards.add(player_card);
-			player_point += card_vals[player_card];
+			player_point += card_vals[player_card - 1];
 
+			s.nextLine();
 			System.out.print("Press [Enter] to draw a card");
 			s.nextLine();
 
-			System.out.printf("Your total is %d.%n", player_point);
-			// print card face for specific card
-			System.out.print("");
+			if (player_card == 1) {
+						System.out.print("Your card is an Ace. Do you want it to be worth 1 or 11?: ");
+						String num = s.nextLine();
+						if (num.equals("1")) {
+							player_point += 1;
+						} else{
+							player_point += 11;
+						}
+			
+						System.out.printf("Your current total is %d.%n", player_point);
+			} else {
+					if (player_card == 11) {
+						System.out.println("Your starting card is:" + card_names[1]);
+					} else if (player_card == 12) {
+						System.out.println("Your starting card is:" + card_names[2]);
+					} else if (player_card == 13) {
+						System.out.println("Your starting card is:" + card_names[3]);
+					} else {
+						System.out.printf("Your starting card is: %d%n", player_card);
+					}
+		
+					System.out.printf("Your current total is %d.%n", player_point);
+			}
 
-			if (player_point == 21) {
-				break;
-			} else if (player_point > 21) {
-				System.out.println("Sorry, you lost.");
-				money -= bet;
+			if (player_point == 21 || player_point > 21) {
 				break;
 			}
 		}
 
-		System.out.print("The dealer's first card was...");
+		System.out.print("The dealer's first card was... [Enter]");
 		// reveal dealer's first card
 		s.nextLine();
 
-		dealer_point += card_vals[first_dealer_card];
+		dealer_point += card_vals[first_dealer_card - 1];
 		System.out.printf("The dealer's total is %d.%n", dealer_point);
 
-		if (dealer_point <= 16) {
-			System.out.print("The dealer will now draw another card...");
-			// reveal dealer's card
-			System.out.print("");
+		while(true) {
+			if (dealer_point <= 16) {
+				System.out.println("The dealer will now draw another card...");
+				// reveal dealer's card
+				System.out.print("");
 
-			dealer_card = (int) (Math.random() * 13 + 1);
-			dealer_cards.add(dealer_card);
-			dealer_point += card_vals[dealer_card];
+				dealer_card = (int) (Math.random() * 13 + 1);
+				dealer_cards.add(dealer_card);
+				dealer_point += card_vals[dealer_card - 1];
 
-			System.out.printf("The dealer's total is %d.%n", dealer_point);
+				System.out.printf("The dealer's total is %d.%n", dealer_point);
+			} else {
+				break;
+			}
 		}
 
 		if (dealer_point == 21) {
@@ -705,9 +744,11 @@ public class MegaCasino {
 		} else if (dealer_point > 21) {
 			if (player_point <= 21) {
 				if (player_point == 21) {
+					System.out.println("Congratulations, you won!");
 					money += 1.5*bet;
 					return money;
 				} else {
+					System.out.println("Congratulations, you won!");
 					money += bet;
 					return money;
 				}
